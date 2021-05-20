@@ -77,7 +77,7 @@ def start_monkey():
         except KeyboardInterrupt:
             log.logger.info('Monkey Interrupt because key Abort')
         except Exception as e:
-                log.logger.error(repr(e))
+            log.logger.error(repr(e))
         finally:
             stop_pull()
             assert_monkey_ps(False)
