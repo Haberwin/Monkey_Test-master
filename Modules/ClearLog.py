@@ -10,7 +10,7 @@ from time import sleep
 import traceback
 
 
-def chear_log(start_time, log_path):
+def clear_log(start_time, log_path):
     logFileList = []
     exceptionFileList = []
     for _ in log_path.iterdir():
