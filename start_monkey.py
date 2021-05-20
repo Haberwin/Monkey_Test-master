@@ -1,3 +1,11 @@
+'''
+Author: liuwenhua
+Date: 2021-03-05 17:10:15
+LastEditTime: 2021-05-20 11:23:19
+LastEditors: Please set LastEditors
+Description: In User Settings Edit
+FilePath: \Monkey_Test-master\start_monkey.py
+'''
 # -*-coding:utf-8
 import subprocess
 import os
@@ -62,11 +70,14 @@ def start_monkey():
                 assert_monkey_ps(True)
                 sleep(300)
                 if pull_times%24==0:
-                    ClearLog.clear_log(start_time,log_path)
+                    try:
+                        ClearLog.clear_log(start_time,log_path/'MTBF-log')
+                    except Exception as e:
+                        log.logger.error(repr(e))
         except KeyboardInterrupt:
             log.logger.info('Monkey Interrupt because key Abort')
-        except Exception:
-            traceback.print_exc()
+        except Exception as e:
+                log.logger.error(repr(e))
         finally:
             stop_pull()
             assert_monkey_ps(False)
@@ -96,7 +107,7 @@ def run_monkey(serial_no):
     monkey_command = config.get('monkey', 'command')
     # log.logger.info('adb -s {0} shell {1} '.format(serial_no, monkey_command))
     start_time_str=start_time.strftime("%Y%m%d%H%M%S")
-    run_cmd = f'start /b adb -s {serial_no} shell "{monkey_command}>> {log_path}/Monkey-log/monkey-{serial_no}-{start_time_str}.txt'
+    run_cmd = f'start /b adb -s {serial_no} shell "{monkey_command} ">> {log_path}/Monkey-log/monkey-{serial_no}-{start_time_str}.txt'
     if platform.system().__eq__('Linux'):
         run_cmd = f'adb -s {serial_no} shell "{monkey_command}>> {log_path}/Monkey-log/monkey-{serial_no}-{start_time_str}.txt &'
     log.logger.info(run_cmd)
@@ -144,7 +155,7 @@ def pull_mtklog():
             # log.logger.info(thread_pull_log.stderr.readline().decode('utf-8', 'ignore'))
             stderr = thread_pull_log.stderr.readline().decode('utf-8', 'ignore')
             print(stderr)
-            log.logger.info(stderr)
+            log.logger.debug(stderr)
     except Exception:
         thread_pull_log.terminate()
         log.logger.error("Thread pull log Abort")
@@ -183,5 +194,5 @@ if __name__ == '__main__':
         log.logger.info("Set running time {} Fail".format(test_time))
     else:
         log.logger.info("Set running time {}".format(test_time))
-    # start_monkey()
-    ClearLog.chear_log(start_time,log_path/'MTBF-log')
+    start_monkey()
+    # ClearLog.chear_log(start_time,log_path/'MTBF-log')
